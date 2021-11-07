@@ -20,7 +20,11 @@ The signatures are compared using structural_similarity in skimage.metrics packa
 
 
 ## Preview
-![Preview](assets/Signature.gif)
+<!-- ![Preview](assets/Signature.gif) -->
+
+https://user-images.githubusercontent.com/51584907/140640842-b7cd3fe2-493a-469b-b121-5b9f02707bcf.mp4
+
+
 
 ## Please open an issue if
 * you have any suggestion to improve this project
