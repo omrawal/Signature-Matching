@@ -16,8 +16,8 @@ The signatures are compared using structural_similarity in skimage.metrics packa
 
 
 ## Run
-`pip install requirements.txt`
-`python main.py`
+1. `pip install requirements.txt`
+2. `python main.py`
 
 
 ## Preview
