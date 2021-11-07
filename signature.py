@@ -19,10 +19,13 @@ def match(path1, path2):
     cv2.imshow("Two", img2)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    print(ssim(img1, img2))
     similarity_value = "{:.2f}".format(ssim(img1, img2)*100)
-    print("answer is ", similarity_value, "type=", type(similarity_value))
+    # print("answer is ", float(similarity_value),
+    #       "type=", type(similarity_value))
+    return float(similarity_value)
 
 
-match("D:\\Code\\Git stuff\\Signature-Matching\\assets\\1.png",
-      "D:\\Code\\Git stuff\\Signature-Matching\\assets\\3.png")
+# ans = match("D:\\Code\\Git stuff\\Signature-Matching\\assets\\1.png",
+#             "D:\\Code\\Git stuff\\Signature-Matching\\assets\\3.png")
+# print(ans)
+# print(type(ans))
