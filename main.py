@@ -86,6 +86,18 @@ def checkSimilarity(window, path1, path2):
     return True
 
 
+def verify_images(window, path1, path2):
+    result = match(path1=path1, path2=path2)
+    if(result <= THRESHOLD):
+        messagebox.showerror(
+            message="Failure: Signatures Do Not Match",)
+        pass
+    else:
+        messagebox.showinfo(
+            message="Success: Signatures Match",)
+    return True
+
+
 root = tk.Tk()
 root.title("Signature Matching")
 root.geometry("500x700")  # 300x200
@@ -120,10 +132,17 @@ img2_browse_button = tk.Button(
     root, text="Browse", font=10, command=lambda: browsefunc(ent=image2_path_entry))
 img2_browse_button.place(x=400, y=260)
 
+verify_button = tk.Button(
+    root, text="Verify", font=10, command=lambda: verify_images(window=root,
+                                                                path1=image1_path_entry.get(),
+                                                                path2=image2_path_entry.get(),))
+
+verify_button.place(x=200, y=320)
+
 compare_button = tk.Button(
     root, text="Compare", font=10, command=lambda: checkSimilarity(window=root,
                                                                    path1=image1_path_entry.get(),
                                                                    path2=image2_path_entry.get(),))
 
-compare_button.place(x=200, y=320)
+compare_button.place(x=200, y=380)
 root.mainloop()
