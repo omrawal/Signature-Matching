@@ -3,12 +3,14 @@ from tkinter.filedialog import askopenfilename
 from tkinter import messagebox
 import os
 import cv2
+from matplotlib import image
 from numpy import result_type
-from signature import match
+from signature import match, matchCropped
 
 
 # Mach Threshold
 THRESHOLD = 85
+ref_point = []
 
 
 def browsefunc(ent):
@@ -86,6 +88,110 @@ def checkSimilarity(window, path1, path2):
     return True
 
 
+def shape_selection(event, x, y, flags, param):
+    # grab references to the global variables
+    global ref_point
+    image = param[0]
+    # if the left mouse button was clicked, record the starting
+    # (x, y) coordinates and indicate that cropping is being performed
+    if event == cv2.EVENT_LBUTTONDOWN:
+        ref_point = [(x, y)]
+
+    # check to see if the left mouse button was released
+    elif event == cv2.EVENT_LBUTTONUP:
+        # record the ending (x, y) coordinates and indicate that
+        # the cropping operation is finished
+        ref_point.append((x, y))
+
+        # draw a rectangle around the region of interest
+        cv2.rectangle(image, ref_point[0], ref_point[1], (0, 255, 0), 1)
+        cv2.imshow("Image1", image)
+
+
+def crop_compare(window, path1, path2):
+    global ref_point
+    # read the images
+    img1 = cv2.imread(path1)
+    img2 = cv2.imread(path2)
+    # turn images to grayscale
+    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+    # cropping first image
+    image = img1.copy()
+    clone = image.copy()
+    ref_point = []
+    cv2.namedWindow("Image1")
+    param = [image]
+    cv2.setMouseCallback("Image1", shape_selection, param)
+    while True:
+        # display the image and wait for a keypress
+        cv2.imshow("Image1", image)
+        key = cv2.waitKey(1) & 0xFF
+        # press 'r' to reset the window
+        if key == ord("r"):
+            image = clone.copy()
+
+        # if the 'esc' key is pressed, break from the loop
+        elif key % 256 == 27 or cv2.waitKey(0):
+            break
+    # close all open windows
+    cv2.destroyAllWindows()
+    # print("reference points", ref_point)
+    # print("reference points",
+    #       ref_point[0][0], ref_point[0][1], ref_point[1][0], ref_point[1][1],)
+    top_left_x = min([ref_point[1][0], ref_point[0][0]])
+    top_left_y = min([ref_point[0][1], ref_point[1][1]])
+    bot_right_x = max([ref_point[1][0], ref_point[0][0]])
+    bot_right_y = max([ref_point[0][1], ref_point[1][1]])
+    newImg1 = clone[top_left_y:bot_right_y+1, top_left_x:bot_right_x+1]
+    # print("New Image -=====-", newImg1)
+    cv2.imshow("Final image 1 used for comparison", newImg1)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    # cropping second image
+    image = img2.copy()
+    clone = image.copy()
+    ref_point = []
+    cv2.namedWindow("Image1")
+    param = [image]
+    cv2.setMouseCallback("Image1", shape_selection, param)
+    while True:
+        # display the image and wait for a keypress
+        cv2.imshow("Image1", image)
+        key = cv2.waitKey(1) & 0xFF
+        # press 'r' to reset the window
+        if key == ord("r"):
+            image = clone.copy()
+
+        # if the 'esc' key is pressed, break from the loop
+        elif key % 256 == 27 or cv2.waitKey(0):
+            break
+    # close all open windows
+    cv2.destroyAllWindows()
+    # print("reference points", ref_point)
+    # print("reference points",
+    #       ref_point[0][0], ref_point[0][1], ref_point[1][0], ref_point[1][1],)
+    top_left_x = min([ref_point[1][0], ref_point[0][0]])
+    top_left_y = min([ref_point[0][1], ref_point[1][1]])
+    bot_right_x = max([ref_point[1][0], ref_point[0][0]])
+    bot_right_y = max([ref_point[0][1], ref_point[1][1]])
+    newImg2 = clone[top_left_y:bot_right_y+1, top_left_x:bot_right_x+1]
+    # print("New Image -=====-", newImg1)
+    cv2.imshow("Final image 2 used for comparison", newImg2)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    result = matchCropped(newImg1, newImg2)
+    if(result <= THRESHOLD):
+        messagebox.showerror("Failure: Signatures Do Not Match",
+                             "Signatures are "+str(result)+f" % similar!!")
+        pass
+    else:
+        messagebox.showinfo("Success: Signatures Match",
+                            "Signatures are "+str(result)+f" % similar!!")
+    return True
+
+
 def verify_images(window, path1, path2):
     result = match(path1=path1, path2=path2)
     if(result <= THRESHOLD):
@@ -145,4 +251,12 @@ compare_button = tk.Button(
                                                                    path2=image2_path_entry.get(),))
 
 compare_button.place(x=200, y=380)
+
+crop_compare_button = tk.Button(
+    root, text="Crop and Compare", font=10, command=lambda: crop_compare(window=root,
+                                                                         path1=image1_path_entry.get(),
+                                                                         path2=image2_path_entry.get(),))
+
+crop_compare_button.place(x=200, y=440)
+
 root.mainloop()

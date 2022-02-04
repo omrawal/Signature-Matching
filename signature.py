@@ -15,8 +15,29 @@ def match(path1, path2):
     img1 = cv2.resize(img1, (300, 300))
     img2 = cv2.resize(img2, (300, 300))
     # display both images
-    cv2.imshow("One", img1)
-    cv2.imshow("Two", img2)
+    cv2.imshow("Final image 1 used for comparison", img1)
+    cv2.imshow("Final image 2 used for comparison", img2)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    similarity_value = "{:.2f}".format(ssim(img1, img2)*100)
+    # print("answer is ", float(similarity_value),
+    #       "type=", type(similarity_value))
+    return float(similarity_value)
+
+# Cropped image as CV2 object is passed
+
+
+def matchCropped(img1, img2):
+    # turn images to grayscale
+    # img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+    # img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+
+    # resize images for comparison
+    img1 = cv2.resize(img1, (300, 300))
+    img2 = cv2.resize(img2, (300, 300))
+    # display both images
+    cv2.imshow("Final image 1 used for comparison", img1)
+    cv2.imshow("Final image 2 used for comparison", img2)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     similarity_value = "{:.2f}".format(ssim(img1, img2)*100)
